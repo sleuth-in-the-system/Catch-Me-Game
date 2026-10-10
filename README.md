@@ -26,10 +26,21 @@ A simple, browser-based catching game built with HTML, CSS, and JavaScript. The 
 5. Move your cursor towards the ball and try to catch it.
 6. Check your completion time on the victory screen!
 
+## 📸 Screenshots
+
+### Opening Screen
+![Opening Screen](screenshots/OpeningTab.png)
+
+### Gameplay
+![Gameplay](screenshots/GamePlay.png)
+
+### Victory Screen
+![Victory Screen](screenshots/WonPage.png)
 ##Project Structure
 
 ```text
 Catch-Me/
+├── screenshots
 ├── OpeningTab.html
 ├── GameTab.html
 ├── WonTab.html
