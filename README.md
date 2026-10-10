@@ -29,7 +29,7 @@ A simple, browser-based catching game built with HTML, CSS, and JavaScript. The 
 ## 📸 Screenshots
 
 ### Opening Screen
-![Opening Screen](screenshots/OpeningTab.png)
+![Home Page](screenshots/HomePage.png)
 
 ### Gameplay
 ![Gameplay](screenshots/GamePlay.png)
