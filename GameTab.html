@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#191970">
+  <title>Catch Me | Game</title>
+  <style>
+    :root { --navy: #191970; --navy-light: #25258a; --orange: #ff4500; --cream: #ffdead; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(ellipse at top, var(--navy-light), var(--navy) 70%);
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px clamp(16px, 4vw, 36px);
+      border-bottom: 1px solid rgba(255, 222, 173, .22);
+      background: rgba(7, 7, 48, .25);
+    }
+    .brand { font-size: 1.2rem; font-weight: bold; letter-spacing: .03em; }
+    .timer-wrap { text-align: center; }
+    .timer-label { display: block; font-size: .75rem; opacity: .78; text-transform: uppercase; letter-spacing: .12em; }
+    #timer { font: bold 1.45rem ui-monospace, SFMono-Regular, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    button { font: bold .95rem Georgia, "Times New Roman", serif; cursor: pointer; }
+    #quit {
+      padding: 9px 15px;
+      border: 1px solid rgba(255, 222, 173, .5);
+      border-radius: 10px;
+      color: var(--cream);
+      background: transparent;
+    }
+    #quit:hover { background: rgba(255, 222, 173, .1); }
+    #gameArea { position: relative; height: calc(100vh - 75px); min-height: 300px; }
+    #instruction {
+      position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
+      width: max-content; max-width: calc(100% - 32px); text-align: center;
+      font-size: .98rem; opacity: .82; pointer-events: none;
+    }
+    #Ball {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(88px, 12vw, 112px);
+      aspect-ratio: 1;
+      border: 0;
+      border-radius: 50%;
+      background: var(--orange);
+      color: var(--cream);
+      font-size: clamp(.9rem, 2vw, 1.1rem);
+      box-shadow: inset -8px -9px 0 rgba(120, 20, 0, .13), 0 10px 26px rgba(255, 69, 0, .25);
+      transition: left .12s ease-out, top .12s ease-out, filter .12s ease;
+      touch-action: manipulation;
+    }
+    #Ball:hover { filter: brightness(1.08); }
+    #Ball:focus-visible, #quit:focus-visible { outline: 3px solid white; outline-offset: 4px; }
+    @media (max-width: 480px) {
+      header { padding: 13px 14px; }
+      .brand { font-size: 1rem; }
+      #timer { font-size: 1.2rem; }
+      #quit { padding: 8px 10px; }
+      #instruction { top: 18px; font-size: .9rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { #Ball { transition: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Catch Me</div>
+    <div class="timer-wrap" aria-live="off">
+      <span class="timer-label">Time</span>
+      <span id="timer">00:00.0</span>
+    </div>
+    <button id="quit" type="button">Quit</button>
+  </header>
+  <main id="gameArea" aria-label="Game area">
+    <p id="instruction">Catch the ball before it escapes your cursor!</p>
+    <button id="Ball" type="button" aria-label="Catch the ball">Catch Me</button>
+  </main>
+  <script>
+    const area = document.getElementById("gameArea");
+    const ball = document.getElementById("Ball");
+    const timer = document.getElementById("timer");
+    const startValue = Number(sessionStorage.getItem("catchMeStartTime"));
+    const startTime = Number.isFinite(startValue) && startValue > 0 ? startValue : Date.now();
+    if (!startValue) sessionStorage.setItem("catchMeStartTime", String(startTime));
+    let lastMove = 0;
+    let caught = false;
+    let animationFrame;
+
+    function formatTime(ms) {
+      const tenths = Math.floor(ms / 100);
+      const minutes = Math.floor(tenths / 600);
+      const seconds = Math.floor((tenths % 600) / 10);
+      const decimal = tenths % 10;
+      return String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0") + "." + decimal;
+    }
+    function updateTimer() {
+      if (caught) return;
+      timer.textContent = formatTime(Date.now() - startTime);
+      animationFrame = requestAnimationFrame(updateTimer);
+    }
+    function moveBall() {
+      const areaRect = area.getBoundingClientRect();
+      const ballRect = ball.getBoundingClientRect();
+      const pad = 12;
+      const maxX = Math.max(pad, areaRect.width - ballRect.width - pad);
+      const maxY = Math.max(70, areaRect.height - ballRect.height - pad);
+      const x = pad + Math.random() * Math.max(0, maxX - pad);
+      const y = 64 + Math.random() * Math.max(0, maxY - 64);
+      ball.style.left = (x + ballRect.width / 2) + "px";
+      ball.style.top = (y + ballRect.height / 2) + "px";
+    }
+    area.addEventListener("pointermove", (event) => {
+      if (caught || event.pointerType !== "mouse" || ball.contains(event.target)) return;
+      const now = Date.now();
+      if (now - lastMove < 180) return;
+      const rect = ball.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      if (Math.hypot(event.clientX - cx, event.clientY - cy) < 155) {
+        lastMove = now;
+        moveBall();
+      }
+    });
+    ball.addEventListener("click", () => {
+      if (caught) return;
+      caught = true;
+      cancelAnimationFrame(animationFrame);
+      const elapsed = Date.now() - startTime;
+      sessionStorage.setItem("catchMeElapsedTime", String(elapsed));
+      window.location.href = "WonTab.html";
+    });
+    document.getElementById("quit").addEventListener("click", () => {
+      window.location.href = "OpeningTab.html";
+    });
+    window.addEventListener("resize", () => {
+      if (!caught) moveBall();
+    });
+    updateTimer();
+  </script>
+</body>
+</html>

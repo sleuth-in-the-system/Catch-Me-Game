@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#191970">
+  <title>Catch Me | Victory</title>
+  <style>
+    :root { --navy: #191970; --navy-light: #25258a; --orange: #ff4500; --cream: #ffdead; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px;
+      background: radial-gradient(ellipse at top, var(--navy-light), var(--navy) 68%);
+      color: var(--cream); font-family: Georgia, "Times New Roman", serif;
+    }
+    main {
+      width: min(100%, 600px); padding: clamp(30px, 6vw, 56px) 24px; text-align: center;
+      border: 1px solid rgba(255, 222, 173, .28); border-radius: 22px;
+      background: rgba(7, 7, 48, .22); box-shadow: 0 18px 50px rgba(0, 0, 0, .2);
+    }
+    .trophy { width: 82px; height: 82px; display: grid; place-items: center; margin: 0 auto 22px;
+      border-radius: 50%; background: var(--orange); color: var(--cream); font-size: 2.2rem;
+      box-shadow: inset -7px -8px 0 rgba(120, 20, 0, .13), 0 10px 26px rgba(255, 69, 0, .22); }
+    h1 { margin: 0; font-size: clamp(2rem, 7vw, 3.4rem); }
+    p { line-height: 1.6; }
+    .time-label { margin: 24px 0 6px; opacity: .8; text-transform: uppercase; letter-spacing: .14em; font-size: .8rem; }
+    #finalTime { margin: 0; font: bold clamp(2rem, 8vw, 3.2rem) ui-monospace, SFMono-Regular, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    button { min-width: 125px; padding: 12px 20px; border: 1px solid transparent; border-radius: 12px;
+      background: var(--orange); color: var(--cream); font: bold 1rem Georgia, "Times New Roman", serif;
+      cursor: pointer; box-shadow: 0 5px 0 #b83200; transition: transform .15s ease, filter .15s ease; }
+    button:hover { filter: brightness(1.08); transform: translateY(-2px); }
+    button.secondary { background: transparent; border-color: rgba(255, 222, 173, .55); box-shadow: none; }
+    button:focus-visible { outline: 3px solid white; outline-offset: 4px; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="trophy" aria-hidden="true">✓</div>
+    <h1>You caught it!</h1>
+    <p>Quick reflexes! The ball has officially run out of places to hide.</p>
+    <p class="time-label">Your time</p>
+    <p id="finalTime">00:00.0</p>
+    <div class="actions">
+      <button id="playAgain" type="button">Play Again</button>
+      <button class="secondary" id="home" type="button">Home</button>
+    </div>
+  </main>
+  <script>
+    function formatTime(ms) {
+      const tenths = Math.floor(ms / 100);
+      const minutes = Math.floor(tenths / 600);
+      const seconds = Math.floor((tenths % 600) / 10);
+      const decimal = tenths % 10;
+      return String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0") + "." + decimal;
+    }
+    const elapsed = Number(sessionStorage.getItem("catchMeElapsedTime"));
+    document.getElementById("finalTime").textContent =
+      Number.isFinite(elapsed) && elapsed >= 0 ? formatTime(elapsed) : "Time unavailable";
+    document.getElementById("playAgain").addEventListener("click", () => {
+      sessionStorage.setItem("catchMeStartTime", String(Date.now()));
+      sessionStorage.removeItem("catchMeElapsedTime");
+      window.location.href = "GameTab.html";
+    });
+    document.getElementById("home").addEventListener("click", () => {
+      window.location.href = "OpeningTab.html";
+    });
+  </script>
+</body>
+</html>
