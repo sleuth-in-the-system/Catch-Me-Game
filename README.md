@@ -2,7 +2,7 @@
 
 A simple, browser-based catching game built with HTML, CSS, and JavaScript. The goal is simple: catch the moving ball before it escapes your cursor!
 
-##Features
+## Features
 
 - **Dynamic Ball Movement:** The ball dodges the cursor as it approaches.
 - **Completion Timer:** Tracks how long it takes to catch the ball.
@@ -11,13 +11,13 @@ A simple, browser-based catching game built with HTML, CSS, and JavaScript. The 
 - **Responsive Design:** Adapts to different screen sizes.
 - **Simple UI:** A minimalist design featuring a midnight-blue background and an orange-red ball.
 
-##Technologies Used
+## Technologies Used
 
 - HTML5
 - CSS3
 - JavaScript
 
-##How to Play
+## How to Play
 
 1. Download or clone this repository.
 2. Keep all three HTML files in the same folder.
@@ -47,6 +47,6 @@ Catch-Me/
 └── README.md
 ```
 
-##Author
+## Author
 
 Prerana Banerjee
